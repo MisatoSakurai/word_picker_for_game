@@ -21,13 +21,7 @@
       }
     ],
     "routes": [
-      {
-        "src": "/config.js",
-        "dest": "/public/config.js"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/$1"
-      }
+      { "src": "/config.js", "dest": "/public/config.js" },
+      { "src": "/(.*)", "dest": "/$1" }
     ]
   }

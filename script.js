@@ -138,7 +138,13 @@ window.onload = initializeApp;
 function checkPasswordAndRedirect(event) {
     event.preventDefault();
     const enteredPassword = prompt('パスワードを入力してください:');
-    if (enteredPassword === window.config.COMMON_PASS) {
+    let correctPassword;
+    if(window.config.COMMON_PASS){
+        correctPassword = window.config.COMMON_PASS;
+    }else{
+        correctPassword = secrets.COMMON_PASS;
+    }
+    if (enteredPassword === correctPassword) {
         window.open(document.getElementById('spreadsheetLink').getAttribute('href'), '_blank');
     } else {
         alert('パスワードが正しくありません。');

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ランダムワードピッカー</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <!-- <h1>ランダムワードピッカー</h1> -->
+        <div class="select-container">
+            <select id="columnSelect" style="display: none;">
+                <option value="">ゲームを選択</option>
+            </select>
+            <button class="hamburger-menu" onclick="toggleSideMenu()">☰</button>
+            <div class="side-menu" id="sideMenu">
+                <a href="#" onclick="clearSessionStorage(); return false;">お題を更新</a>
+                <a id="spreadsheetLink" href="#" onclick="checkPasswordAndRedirect(event)">お題リストへ</a>
+            </div>
+            <div class="overlay" id="overlay" onclick="toggleSideMenu()"></div>
+        
+        </div>
+    </header>
+    <main>
+        <div id="loader" class="loader"></div>
+        <div id="result"></div>
+    </main>
+    <footer>
+        <button onclick="pickRandomWord()" class="pick-button">お題を引く</button>
+    </footer>
+   
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

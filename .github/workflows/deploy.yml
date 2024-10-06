@@ -11,7 +11,7 @@ jobs:
     environment: 
       name: production
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Create config.js with secrets
       run: |
         echo "window.config = {" > config.js

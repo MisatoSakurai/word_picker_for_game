@@ -3,9 +3,11 @@ let headers = [];
 
 // 設定を取得する関数
 function getConfig(key, defaultValue) {
+    console.log('window.config:', window.config); // デバッグ用
     if (window.config && window.config[key] !== undefined) {
         return window.config[key];
     }
+    console.warn(`Config key "${key}" not found, using default value:`, defaultValue); // 警告ログ
     return defaultValue;
 }
 
@@ -39,7 +41,9 @@ function setSpreadsheetLink() {
 }
 
 function fetchDataFromAPI() {
+    console.log('Fetching data from API...');
     const API_URL = getConfig('API_URL');
+    console.log('API_URL:', API_URL);
     if (!API_URL) {
         console.error('API_URL is not defined');
         document.getElementById('result').textContent = 'API URLの設定が見つかりません。';

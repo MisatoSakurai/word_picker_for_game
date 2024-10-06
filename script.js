@@ -1,19 +1,12 @@
 let data = {};
 let headers = [];
 
-// 環境変数から設定を取得する関数
+// 設定を取得する関数
 function getConfig(key, defaultValue) {
-    if (window.config && window.config[key]) {
+    if (window.config && window.config[key] !== undefined) {
         return window.config[key];
     }
-    // GitHub Pages 環境では、環境変数は直接アクセスできないため、
-    // ここでは代替の方法を提供します。
-    const envConfigs = {
-        API_URL: '',
-        SPREADSHEET_URL: '',
-        COMMON_PASS: ''
-    };
-    return envConfigs[key] || defaultValue;
+    return defaultValue;
 }
 
 function initializeApp() {

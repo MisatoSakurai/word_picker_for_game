@@ -12,11 +12,13 @@ jobs:
       name: production
     steps:
     - uses: actions/checkout@v2
-    - name: Update script.js with secrets
+    - name: Create config.js with secrets
       run: |
-        sed -i 's|%%API_URL%%|${{ secrets.API_URL }}|g' script.js
-        sed -i 's|%%SPREADSHEET_URL%%|${{ secrets.SPREADSHEET_URL }}|g' script.js
-        sed -i 's|%%COMMON_PASS%%|${{ secrets.COMMON_PASS }}|g' script.js
+        echo "window.config = {" > config.js
+        echo "  API_URL: '${{ secrets.API_URL }}'," >> config.js
+        echo "  SPREADSHEET_URL: '${{ secrets.SPREADSHEET_URL }}'," >> config.js
+        echo "  COMMON_PASS: '${{ secrets.COMMON_PASS }}'" >> config.js
+        echo "};" >> config.js
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:

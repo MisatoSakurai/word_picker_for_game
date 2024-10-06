@@ -11,6 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Create config.js
+      run: cat config.js
       run: |
         echo "window.config = {" > config.js
         echo "  API_URL: '${{ secrets.API_URL }}'," >> config.js

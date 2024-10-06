@@ -27,20 +27,13 @@ function initializeApp() {
 
 function setSpreadsheetLink() {
     const spreadsheetLink = document.getElementById('spreadsheetLink');
-    if (window.config) {
-        spreadsheetLink.href = window.config.SPREADSHEET_URL;
-    }else{
-        spreadsheetLink.href = secrets.SPREADSHEET_URL;
-    }
+    spreadsheetLink.href = window.config.SPREADSHEET_URL;
+    
 }
 
 function fetchDataFromAPI() {
     let API_URL;
-    if (window.config) {        
-        API_URL = window.config.API_URL;
-    }else{
-        API_URL = secrets.API_URL;
-    }
+    API_URL = window.config.API_URL;
     const loader = document.getElementById('loader');
     const select = document.getElementById('columnSelect');
     const button = document.querySelector('footer button');
@@ -139,11 +132,7 @@ function checkPasswordAndRedirect(event) {
     event.preventDefault();
     const enteredPassword = prompt('パスワードを入力してください:');
     let correctPassword;
-    if(window.config){
-        correctPassword = window.config.COMMON_PASS;
-    }else{
-        correctPassword = secrets.COMMON_PASS;
-    }
+    correctPassword = window.config.COMMON_PASS;
     if (enteredPassword === correctPassword) {
         window.open(document.getElementById('spreadsheetLink').getAttribute('href'), '_blank');
     } else {

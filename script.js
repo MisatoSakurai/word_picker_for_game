@@ -1,6 +1,21 @@
 let data = {};
 let headers = [];
 
+// 環境変数から設定を取得する関数
+function getConfig(key, defaultValue) {
+    if (window.config && window.config[key]) {
+        return window.config[key];
+    }
+    // GitHub Pages 環境では、環境変数は直接アクセスできないため、
+    // ここでは代替の方法を提供します。
+    const envConfigs = {
+        API_URL: '%%API_URL%%',
+        SPREADSHEET_URL: '%%SPREADSHEET_URL%%',
+        COMMON_PASS: '%%COMMON_PASS%%'
+    };
+    return envConfigs[key] || defaultValue;
+}
+
 function initializeApp() {
     const loader = document.getElementById('loader');
     const select = document.getElementById('columnSelect');
@@ -27,13 +42,17 @@ function initializeApp() {
 
 function setSpreadsheetLink() {
     const spreadsheetLink = document.getElementById('spreadsheetLink');
-    spreadsheetLink.href = window.config.SPREADSHEET_URL;
-    
+    spreadsheetLink.href = getConfig('SPREADSHEET_URL', '#');
 }
 
 function fetchDataFromAPI() {
-    let API_URL;
-    API_URL = window.config.API_URL;
+    const API_URL = getConfig('API_URL');
+    if (!API_URL) {
+        console.error('API_URL is not defined');
+        document.getElementById('result').textContent = 'API URLの設定が見つかりません。';
+        return;
+    }
+
     const loader = document.getElementById('loader');
     const select = document.getElementById('columnSelect');
     const button = document.querySelector('footer button');
@@ -53,7 +72,6 @@ function fetchDataFromAPI() {
         .then(jsonData => {
             headers = jsonData.headers;
             data = jsonData.data;
-
 
             // データをセッションストレージに保存
             sessionStorage.setItem('spreadsheetData', JSON.stringify({headers, data}));
@@ -131,10 +149,9 @@ window.onload = initializeApp;
 function checkPasswordAndRedirect(event) {
     event.preventDefault();
     const enteredPassword = prompt('パスワードを入力してください:');
-    let correctPassword;
-    correctPassword = window.config.COMMON_PASS;
-    if (enteredPassword === correctPassword) {
-        window.open(document.getElementById('spreadsheetLink').getAttribute('href'), '_blank');
+    const correctPassword = getConfig('COMMON_PASS');
+    if (correctPassword && enteredPassword === correctPassword) {
+        window.open(getConfig('SPREADSHEET_URL', '#'), '_blank');
     } else {
         alert('パスワードが正しくありません。');
     }

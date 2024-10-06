@@ -10,13 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Create config.js
-      run: echo "window.config = {" > config.js
-      run: cat config.js
+    - name: Update script.js with secrets
       run: |
-        echo "  API_URL: '${{ secrets.API_URL }}'," >> config.js
-        echo "  SPREADSHEET_URL: '${{ secrets.SPREADSHEET_URL }}'" >> config.js
-        echo "};" >> config.js
+        sed -i 's|%%API_URL%%|${{ secrets.API_URL }}|g' script.js
+        sed -i 's|%%SPREADSHEET_URL%%|${{ secrets.SPREADSHEET_URL }}|g' script.js
+        sed -i 's|%%COMMON_PASS%%|${{ secrets.COMMON_PASS }}|g' script.js
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:

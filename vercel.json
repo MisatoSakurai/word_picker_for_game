@@ -2,8 +2,32 @@
     "builds": [
       {
         "src": "generate-config.js",
-        "use": "@vercel/static-build"
+        "use": "@vercel/node",
+        "config": {
+          "includeFiles": ["public/**"]
+        }
+      },
+      {
+        "src": "*.html",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "*.css",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "script.js",
+        "use": "@vercel/static"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/config.js",
+        "dest": "/public/config.js"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/$1"
       }
     ]
   }
-  

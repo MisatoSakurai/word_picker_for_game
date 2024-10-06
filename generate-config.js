@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const configContent = `
 window.config = {
@@ -8,4 +9,12 @@ window.config = {
 };
 `;
 
-fs.writeFileSync('public/config.js', configContent);
+const publicDir = path.join(__dirname, 'public');
+if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+}
+
+fs.writeFileSync(path.join(publicDir, 'config.js'), configContent);
+
+// ビルド成功を示すために空のエクスポートを追加
+module.exports = () => {};

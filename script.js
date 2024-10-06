@@ -27,11 +27,20 @@ function initializeApp() {
 
 function setSpreadsheetLink() {
     const spreadsheetLink = document.getElementById('spreadsheetLink');
-    spreadsheetLink.href = window.config.SPREADSHEET_URL;
+    if (window.config.SPREADSHEET_URL) {
+        spreadsheetLink.href = window.config.SPREADSHEET_URL;
+    }else{
+        spreadsheetLink.href = secrets.SPREADSHEET_URL;
+    }
 }
 
 function fetchDataFromAPI() {
-    const API_URL = window.config.API_URL;
+    let API_URL;
+    if (window.config.API_URL) {        
+        API_URL = window.config.API_URL;
+    }else{
+        API_URL = secrets.API_URL;
+    }
     const loader = document.getElementById('loader');
     const select = document.getElementById('columnSelect');
     const button = document.querySelector('footer button');
@@ -52,7 +61,7 @@ function fetchDataFromAPI() {
             headers = jsonData.headers;
             data = jsonData.data;
 
-            
+
             // データをセッションストレージに保存
             sessionStorage.setItem('spreadsheetData', JSON.stringify({headers, data}));
 

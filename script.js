@@ -52,6 +52,7 @@ function fetchDataFromAPI() {
             headers = jsonData.headers;
             data = jsonData.data;
 
+            
             // データをセッションストレージに保存
             sessionStorage.setItem('spreadsheetData', JSON.stringify({headers, data}));
 

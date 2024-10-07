@@ -6,7 +6,7 @@ const RandomWordPicker = () => {
   const [headers, setHeaders] = useState([]);
   const [selectedColumn, setSelectedColumn] = useState('');
   const [result, setResult] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // 初期値をtrueに設定
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
   const resultRef = useRef(null);
@@ -42,13 +42,13 @@ const RandomWordPicker = () => {
   }, [result]);
 
   const initializeApp = () => {
-    setIsLoading(true);
+    setIsLoading(true); // データ取得開始時にローディングを表示
     const storedData = sessionStorage.getItem('spreadsheetData');
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       setHeaders(parsedData.headers);
       setData(parsedData.data);
-      setIsLoading(false);
+      setIsLoading(false); // データ取得完了時にローディングを非表示
     } else {
       fetchDataFromAPI();
     }
@@ -56,7 +56,6 @@ const RandomWordPicker = () => {
 
   const fetchDataFromAPI = () => {
     const API_URL = process.env.REACT_APP_API_URL;
-    // console.log(API_URL);
     if (!API_URL) {
       console.error('API_URL is not defined');
       setResult('API URLの設定が見つかりません。');
@@ -65,20 +64,17 @@ const RandomWordPicker = () => {
     }
 
     fetch(API_URL)
-      .then(response => {
-        // console.log(response);
-        return response.json();
-      })
+      .then(response => response.json())
       .then(jsonData => {
         setHeaders(jsonData.headers);
         setData(jsonData.data);
         sessionStorage.setItem('spreadsheetData', JSON.stringify(jsonData));
-        setIsLoading(false);
+        setIsLoading(false); // データ取得完了時にローディングを非表示
       })
       .catch(error => {
         console.error('Error fetching data:', error);
         setResult('データの読み込みに失敗しました。');
-        setIsLoading(false);
+        setIsLoading(false); // エラー時もローディングを非表示
       });
   };
 

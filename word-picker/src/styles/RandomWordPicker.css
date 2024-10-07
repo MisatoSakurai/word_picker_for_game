@@ -3,16 +3,17 @@ body, html {
     padding: 0;
     height: 100%;
     font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
     background-color: #f0f0f0;
 }
 
+.random-word-picker {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
 header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: relative;
     background-color: #fff;
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -54,22 +55,27 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 80px 20px;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden; /* はみ出した内容を隠す */
 }
 
 #result {
-    font-size: 3rem;
     font-weight: bold;
     text-align: center;
-    word-break: break-all;
-    max-width: 100%;
+    word-break: break-word;
+    max-width: 90%;
+    max-height: 80%; /* main要素の高さの80%に制限 */
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* はみ出した内容を隠す */
+    /* 初期フォントサイズを削除 */
 }
 
 footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: relative;
     padding: 10px;
     background-color: #fff;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.1);

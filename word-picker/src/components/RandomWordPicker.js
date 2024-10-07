@@ -86,13 +86,13 @@ const RandomWordPicker = () => {
 
     const columnIndex = headers.indexOf(selectedColumn);
     if (columnIndex === -1) {
-      alert('選択された列が見つかりません');
+      alert('選択されたゲームが見つかりません');
       return;
     }
 
     const words = data.map(row => row[columnIndex]).filter(Boolean);
     if (words.length === 0) {
-      alert('選択された列にデータがありません');
+      alert('ゲームの全てのお題を引きました。右上のメニューよりお題を更新してください。');
       return;
     }
 
@@ -150,7 +150,7 @@ const RandomWordPicker = () => {
             </select>
             <button className="hamburger-menu" onClick={toggleSideMenu}>☰</button>
             <div className={`side-menu ${isSideMenuOpen ? 'open' : ''}`}>
-                <a href="#" onClick={clearSessionStorage}>お題を最新のものに更新</a>
+                <a href="#" onClick={clearSessionStorage}>お題を更新</a>
                 <a href="#" onClick={checkPasswordAndRedirect}>お題リストへ</a>
             </div>
             <div className={`overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu}></div>

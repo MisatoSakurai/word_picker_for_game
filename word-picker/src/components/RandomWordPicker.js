@@ -9,7 +9,7 @@ const RandomWordPicker = () => {
   const [isLoading, setIsLoading] = useState(true); // 初期値をtrueに設定
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [playerCount, setPlayerCount] = useState(1);
-  const [results, setResults] = useState(Array(4).fill('↑ゲームを選択'));
+  const [results, setResults] = useState(Array(4).fill('ゲームを選択してください'));
   const resultRefs = useRef([]);
   const containerRefs = useRef([]);
 
@@ -26,13 +26,13 @@ const RandomWordPicker = () => {
   const [isTimeAlmostUp, setIsTimeAlmostUp] = useState(false);
   const [isTimeUp, setIsTimeUp] = useState(false);
 
-  const [selectedFont, setSelectedFont] = useState('Azuki');
+  const [selectedFont, setSelectedFont] = useState('NotoSansJP');
 
   const fontOptions = [
-    { value: 'Azuki', label: '小豆フォント' },
-    { value: 'MakaPop', label: '851マカポップ' },
     { value: 'NotoSansJP', label: 'Noto Sans JP' },
     { value: 'AppliMincho', label: 'アプリ明朝' }, // アプリ明朝を追加
+    { value: 'Azuki', label: '小豆フォント' },
+    { value: 'MakaPop', label: '851マカポップ' },
   ];
 
   const adjustFontSize = () => {

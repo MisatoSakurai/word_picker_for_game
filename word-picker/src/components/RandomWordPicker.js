@@ -97,7 +97,21 @@ const RandomWordPicker = () => {
     }
 
     const randomIndex = Math.floor(Math.random() * words.length);
+    const pickedWord = words[randomIndex];
     setResult(words[randomIndex]);
+
+    // セッションストレージからデータを削除
+    const updatedData = data.filter((row, index) => {
+      return row[columnIndex] !== pickedWord || index !== randomIndex;
+    });
+    setData(updatedData);
+
+    // セッションストレージを更新
+    const updatedSessionData = {
+      headers: headers,
+      data: updatedData
+    };
+    sessionStorage.setItem('spreadsheetData', JSON.stringify(updatedSessionData));
   };
 
   const toggleSideMenu = () => {

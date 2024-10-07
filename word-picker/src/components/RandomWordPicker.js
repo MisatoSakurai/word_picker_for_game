@@ -8,17 +8,34 @@ const RandomWordPicker = () => {
   const [result, setResult] = useState('');
   const [isLoading, setIsLoading] = useState(true); // 初期値をtrueに設定
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [playerCount, setPlayerCount] = useState(1);
+  const [results, setResults] = useState(Array(4).fill(''));
+  const resultRefs = useRef([]);
+  const containerRefs = useRef([]);
 
   const resultRef = useRef(null);
   const mainRef = useRef(null);
 
+  const [fontSizes, setFontSizes] = useState({});
+
+  const [selectedTimer, setSelectedTimer] = useState(0);
+  const [remainingTime, setRemainingTime] = useState(0);
+  const timerRef = useRef(null);
+
+  const [showTimeUpPopup, setShowTimeUpPopup] = useState(false);
+  const [isTimeAlmostUp, setIsTimeAlmostUp] = useState(false);
+  const [isTimeUp, setIsTimeUp] = useState(false);
+
   const adjustFontSize = () => {
     const resultElement = resultRef.current;
     const mainElement = mainRef.current;
+    console.log("mainElement", mainElement);
+    console.log("resultElement", resultElement);
     if (!resultElement || !mainElement) return;
 
     const maxWidth = mainElement.clientWidth * 0.9;
     const maxHeight = mainElement.clientHeight * 0.8;
+    console.log(maxWidth, maxHeight);
 
     let fontSize = Math.min(maxWidth, maxHeight) / 2; // 初期フォントサイズを調整
     resultElement.style.fontSize = `${fontSize}px`;
@@ -30,8 +47,6 @@ const RandomWordPicker = () => {
       fontSize -= 1;
       resultElement.style.fontSize = `${fontSize}px`;
     }
-
-    
   };
 
   useEffect(() => {
@@ -78,9 +93,38 @@ const RandomWordPicker = () => {
       });
   };
 
+  const startTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setRemainingTime(selectedTimer);
+    setIsTimeAlmostUp(false);
+    setIsTimeUp(false);
+    
+    if (selectedTimer === 0) return; // タイマーが0（なし）の場合は何もしない
+
+    timerRef.current = setInterval(() => {
+      setRemainingTime(prevTime => {
+        if (prevTime <= 6 && prevTime > 1) {
+          setIsTimeAlmostUp(true);
+        }
+        if (prevTime <= 1) {
+          clearInterval(timerRef.current);
+          setShowTimeUpPopup(true);
+          setIsTimeAlmostUp(false);
+          setIsTimeUp(true);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+  };
+
+  const closeTimeUpPopup = () => {
+    setShowTimeUpPopup(false);
+  };
+
   const pickRandomWord = () => {
     if (!selectedColumn) {
-      setResult("ゲームを選択してください");
+      setResults(Array(playerCount).fill("ゲームを選択してください"));
       return;
     }
 
@@ -90,20 +134,27 @@ const RandomWordPicker = () => {
       return;
     }
 
-    const words = data.map(row => row[columnIndex]).filter(Boolean);
+    let words = data.map(row => row[columnIndex]).filter(Boolean);
     if (words.length === 0) {
-      alert('ゲームの全てのお題を引きました。右上のメニューよりお題を更新してください。');
+      alert('全てのお題を引きました。右上のメニューよりお題を更新してください');
       return;
     }
 
-    const randomIndex = Math.floor(Math.random() * words.length);
-    const pickedWord = words[randomIndex];
-    setResult(words[randomIndex]);
+    const newResults = [];
+    for (let i = 0; i < playerCount; i++) {
+      if (words.length === 0) {
+        newResults.push("単語がありません");
+      } else {
+        const randomIndex = Math.floor(Math.random() * words.length);
+        const pickedWord = words[randomIndex];
+        newResults.push(pickedWord);
+        words.splice(randomIndex, 1);
+      }
+    }
+    setResults(newResults);
 
     // セッションストレージからデータを削除
-    const updatedData = data.filter((row, index) => {
-      return row[columnIndex] !== pickedWord || index !== randomIndex;
-    });
+    const updatedData = data.filter(row => !newResults.includes(row[columnIndex]));
     setData(updatedData);
 
     // セッションストレージを更新
@@ -112,6 +163,13 @@ const RandomWordPicker = () => {
       data: updatedData
     };
     sessionStorage.setItem('spreadsheetData', JSON.stringify(updatedSessionData));
+
+    if (updatedData.length === 0) {
+      alert('すべてのワードがピックされました。データをリセットします。');
+      initializeApp();
+    }
+
+    startTimer();
   };
 
   const toggleSideMenu = () => {
@@ -134,44 +192,151 @@ const RandomWordPicker = () => {
     }
   };
 
+  const handlePlayerCountChange = (event) => {
+    setPlayerCount(Number(event.target.value));
+  };
+
+  const ResultDisplay = ({ result, index }) => (
+    <div 
+      className={`result-container player-${index + 1}`}
+      ref={el => containerRefs.current[index] = el}
+    >
+      <div 
+        className={`result ${isTimeAlmostUp ? 'time-almost-up' : ''} ${isTimeUp ? 'time-up' : ''}`}
+        ref={el => resultRefs.current[index] = el}
+        style={{ fontSize: `${fontSizes[`player-${index + 1}`] || 16}px` }}
+      >
+        {result}
+      </div>
+    </div>
+  );
+
+  useEffect(() => {
+    resultRefs.current = resultRefs.current.slice(0, playerCount);
+    containerRefs.current = containerRefs.current.slice(0, playerCount);
+    adjustFontSizes();
+    window.addEventListener('resize', adjustFontSizes);
+    return () => window.removeEventListener('resize', adjustFontSizes);
+  }, [results, playerCount]);
+
+  const adjustFontSizes = () => {
+    const mainElement = mainRef.current;
+    console.log("mainElement", mainElement);
+    if (!mainElement) return;
+
+    const newFontSizes = {};
+
+    resultRefs.current.forEach((resultRef, index) => {
+      if (resultRef) {
+        console.log("resultElement", resultRef);
+        const maxWidth = mainElement.clientWidth * 0.9 / Math.ceil(Math.sqrt(playerCount));
+        const maxHeight = mainElement.clientHeight * 0.8 / Math.ceil(Math.sqrt(playerCount));
+        console.log("maxWidth", maxWidth);
+        console.log("maxHeight", maxHeight);
+
+        let fontSize = Math.min(maxWidth, maxHeight) / 2; // 初期フォントサイズを調整
+        console.log("init_fontSize", fontSize);
+        resultRef.style.fontSize = `${fontSize}px`;
+        console.log("最初のresultRef.scrollWidth", resultRef.scrollWidth);
+        console.log("最初のresultRef.scrollHeight", resultRef.scrollHeight);
+        while (
+          (resultRef.scrollWidth > maxWidth || resultRef.scrollHeight > maxHeight) &&
+          fontSize > 16
+        ) {
+          fontSize -= 1;
+          resultRef.style.fontSize = `${fontSize}px`;
+        }
+        console.log("resultRef.scrollWidth", resultRef.scrollWidth);
+        console.log("resultRef.scrollHeight", resultRef.scrollHeight);
+        console.log("resultRef.style.fontSize", resultRef.style.fontSize);
+        newFontSizes[`player-${index + 1}`] = fontSize;
+      }
+    });
+
+    setFontSizes(newFontSizes);
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const timerOptions = [
+    { value: 0, label: 'なし' },
+    { value: 10, label: '10秒' },
+    { value: 30, label: '30秒' },
+    { value: 60, label: '1:00' },
+    { value: 90, label: '1:30' },
+    { value: 120, label: '2:00' },
+    { value: 180, label: '3:00' },
+    { value: 300, label: '5:00' },
+    { value: 600, label: '10:00' },
+  ];
+
   return (
     <div className="random-word-picker">
       <header>
         <div className="select-container">
-            <select
+          <select
             value={selectedColumn}
             onChange={(e) => setSelectedColumn(e.target.value)}
             disabled={isLoading}
-            >
+          >
             <option value="">ゲームを選択</option>
             {headers.map((header, index) => (
-                <option key={index} value={header}>{header}</option>
+              <option key={index} value={header}>{header}</option>
             ))}
-            </select>
-            <button className="hamburger-menu" onClick={toggleSideMenu}>☰</button>
-            <div className={`side-menu ${isSideMenuOpen ? 'open' : ''}`}>
-                <a href="#" onClick={clearSessionStorage}>お題を更新</a>
-                <a href="#" onClick={checkPasswordAndRedirect}>お題リストへ</a>
+          </select>
+          <select
+            value={playerCount}
+            onChange={handlePlayerCountChange}
+            className="player-count-select"
+          >
+            {[1, 2, 3, 4].map(count => (
+              <option key={count} value={count}>{count}人</option>
+            ))}
+          </select>
+          <button className="hamburger-menu" onClick={toggleSideMenu}>☰</button>
+          <div className={`side-menu ${isSideMenuOpen ? 'open' : ''}`}>
+            <a href="#" onClick={clearSessionStorage}>お題を更新</a>
+            <a href="#" onClick={checkPasswordAndRedirect}>お題リストへ</a>
+            <div className="timer-selector">
+              <span>タイマー：</span>
+              <select
+                value={selectedTimer}
+                onChange={(e) => setSelectedTimer(Number(e.target.value))}
+              >
+                {timerOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
             </div>
-            <div className={`overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu}></div>
+          </div>
+          <div className={`overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu}></div>
         </div>
       </header>
 
-      <main ref={mainRef}>
-        {isLoading ? (
-          <div className="loader"></div>
-        ) : (
-          <div id="result" ref={resultRef}>{result}</div>
-        )}
+      <main ref={mainRef} className={`player-count-${playerCount}`}>
+        {results.slice(0, playerCount).map((result, index) => (
+          <ResultDisplay key={index} result={result} index={index} />
+        ))}
       </main>
 
       <footer>
         <button className="pick-button" onClick={pickRandomWord} disabled={isLoading}>
-          お題を引く
+          {remainingTime > 0 ? `お題を引く (${formatTime(remainingTime)})` : 'お題を引く'}
         </button>
       </footer>
 
-      
+      {showTimeUpPopup && selectedTimer !== 0 && (
+        <div className="popup-overlay">
+          <div className="popup">
+            <h2>タイムアップ！</h2>
+            <button onClick={closeTimeUpPopup}>閉じる</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

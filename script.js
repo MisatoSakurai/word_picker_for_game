@@ -1,3 +1,21 @@
+function waitForConfig() {
+    return new Promise((resolve) => {
+        const checkConfig = () => {
+            if (window.config) {
+                resolve();
+            } else {
+                setTimeout(checkConfig, 100);
+            }
+        };
+        checkConfig();
+    });
+}
+
+waitForConfig().then(() => {
+    // ここに既存のコードを移動
+    // 例: initializeApp();
+});
+
 let data = {};
 let headers = [];
 
@@ -154,6 +172,6 @@ function checkPasswordAndRedirect(event) {
     if (correctPassword && enteredPassword === correctPassword) {
         window.open(getConfig('SPREADSHEET_URL', '#'), '_blank');
     } else {
-        alert('パスワードが正しくありません。');
+        alert('パスワー��が正しくありません。');
     }
 }

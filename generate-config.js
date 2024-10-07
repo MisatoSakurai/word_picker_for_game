@@ -8,10 +8,11 @@ console.log('COMMON_PASS:', process.env.COMMON_PASS);
 
 const configContent = `
 window.config = {
-    API_URL: '${process.env.API_URL || ''}',
-    SPREADSHEET_URL: '${process.env.SPREADSHEET_URL || ''}',
-    COMMON_PASS: '${process.env.COMMON_PASS || ''}'
+    API_URL: ${JSON.stringify(process.env.API_URL || '')},
+    SPREADSHEET_URL: ${JSON.stringify(process.env.SPREADSHEET_URL || '')},
+    COMMON_PASS: ${JSON.stringify(process.env.COMMON_PASS || '')}
 };
+console.log('Config loaded:', window.config);
 `;
 
 console.log('Config content:', configContent);
@@ -35,10 +36,11 @@ module.exports = (req, res) => {
 
     const configContent = `
 window.config = {
-    API_URL: '${process.env.API_URL || ''}',
-    SPREADSHEET_URL: '${process.env.SPREADSHEET_URL || ''}',
-    COMMON_PASS: '${process.env.COMMON_PASS || ''}'
+    API_URL: ${JSON.stringify(process.env.API_URL || '')},
+    SPREADSHEET_URL: ${JSON.stringify(process.env.SPREADSHEET_URL || '')},
+    COMMON_PASS: ${JSON.stringify(process.env.COMMON_PASS || '')}
 };
+console.log('Config loaded:', window.config);
 `;
 
     console.log('Config content:', configContent);
@@ -47,6 +49,6 @@ window.config = {
     res.status(200).send(configContent);
   } catch (error) {
     console.error('Error generating config:', error);
-    res.status(500).send(`console.error('Failed to load config');`);
+    res.status(500).send(`console.error('Failed to load config:', ${JSON.stringify(error.message)});`);
   }
 };

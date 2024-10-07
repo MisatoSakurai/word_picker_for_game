@@ -21,7 +21,10 @@ if (!fs.existsSync(publicDir)) {
 
 fs.writeFileSync(path.join(publicDir, 'config.js'), configContent);
 
-// ビルド成功を示すために空のエクスポートを追加
-module.exports = () => {};
-
 console.log('Config.js generated successfully');
+
+// Vercel Functionsとして動作するためのエクスポート
+module.exports = (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.send(configContent);
+};

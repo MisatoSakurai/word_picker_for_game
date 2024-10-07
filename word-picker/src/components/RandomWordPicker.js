@@ -124,17 +124,22 @@ const RandomWordPicker = () => {
     <div className="random-word-picker">
       <header>
         <div className="select-container">
-          <select
+            <select
             value={selectedColumn}
             onChange={(e) => setSelectedColumn(e.target.value)}
             disabled={isLoading}
-          >
+            >
             <option value="">ゲームを選択</option>
             {headers.map((header, index) => (
-              <option key={index} value={header}>{header}</option>
+                <option key={index} value={header}>{header}</option>
             ))}
-          </select>
-          <button className="hamburger-menu" onClick={toggleSideMenu}>☰</button>
+            </select>
+            <button className="hamburger-menu" onClick={toggleSideMenu}>☰</button>
+            <div className={`side-menu ${isSideMenuOpen ? 'open' : ''}`}>
+                <a href="#" onClick={clearSessionStorage}>お題を最新のものに更新</a>
+                <a href="#" onClick={checkPasswordAndRedirect}>お題リストへ</a>
+            </div>
+            <div className={`overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu}></div>
         </div>
       </header>
 
@@ -152,12 +157,7 @@ const RandomWordPicker = () => {
         </button>
       </footer>
 
-      <div className={`side-menu ${isSideMenuOpen ? 'open' : ''}`}>
-        <a href="#" onClick={clearSessionStorage}>お題を最新のものに更新</a>
-        <a href="#" onClick={checkPasswordAndRedirect}>お題リストへ</a>
-      </div>
-
-      <div className={`overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu}></div>
+      
     </div>
   );
 };

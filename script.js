@@ -3,12 +3,16 @@ let headers = [];
 
 // 設定を取得する関数
 function getConfig(key, defaultValue) {
-    console.log('window.config:', window.config); // デバッグ用
-    if (window.config && window.config[key] !== undefined) {
-        return window.config[key];
+    console.log('window.config:', window.config);
+    if (!window.config) {
+        console.error('Config not loaded');
+        return defaultValue;
     }
-    console.warn(`Config key "${key}" not found, using default value:`, defaultValue); // 警告ログ
-    return defaultValue;
+    if (!(key in window.config)) {
+        console.warn(`Config key "${key}" not found, using default value: ${defaultValue}`);
+        return defaultValue;
+    }
+    return window.config[key];
 }
 
 function initializeApp() {

@@ -2,10 +2,7 @@
     "builds": [
       {
         "src": "generate-config.js",
-        "use": "@vercel/node",
-        "config": {
-          "includeFiles": ["public/**"]
-        }
+        "use": "@vercel/node"
       },
       {
         "src": "*.html",
@@ -21,7 +18,7 @@
       }
     ],
     "routes": [
-      { "src": "/config.js", "dest": "/public/config.js" },
+      { "src": "/config.js", "dest": "/generate-config.js" },
       { "src": "/(.*)", "dest": "/$1" }
     ]
   }

@@ -6,6 +6,11 @@ body, html {
     background-color: #f0f0f0;
 }
 
+body, input, button, select {
+    font-family: Arial, sans-serif; /* または他の適切なデフォルトフォント */
+
+}
+
 .random-word-picker {
     display: flex;
     flex-direction: column;
@@ -33,6 +38,7 @@ main {
 }
 
 .result {
+    font-family: var(--selected-font), sans-serif;
     font-weight: bold;
     text-align: center;
     word-break: break-word;
@@ -132,6 +138,10 @@ footer {
 }
 
 .loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border: 5px solid #f3f3f3;
     border-top: 5px solid #3498db;
     border-radius: 50%;
@@ -159,6 +169,8 @@ footer {
     padding: 20px;
     padding-top: 80px;
     box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    font-weight: nomal;
 }
 
 .side-menu.open {
@@ -274,3 +286,35 @@ footer {
     0%, 100% { color: red; }
     50% { color: black; }
 }
+
+.font-selector {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.font-selector span {
+    margin-right: 5px;
+    white-space: nowrap;
+}
+
+.font-selector select {
+    flex-grow: 1;
+}
+
+/* フォント固有のスタイル調整 */
+.font-Azuki { 
+    font-feature-settings: "palt";
+}
+.font-MakaPop { 
+    font-feature-settings: "palt";
+}
+.font-NotoSansJP { 
+    font-weight: 700;
+}
+.font-AppliMincho {
+    font-family: 'AppliMincho', serif;
+    /* アプリ明朝の特性に応じて、必要があれば font-weight や他のプロパティを調整 */
+}
+
+/* 他の既存のスタイル */

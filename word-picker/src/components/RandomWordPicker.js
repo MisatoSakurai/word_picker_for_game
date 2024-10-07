@@ -9,7 +9,7 @@ const RandomWordPicker = () => {
   const [isLoading, setIsLoading] = useState(true); // 初期値をtrueに設定
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [playerCount, setPlayerCount] = useState(1);
-  const [results, setResults] = useState(Array(4).fill(''));
+  const [results, setResults] = useState(Array(4).fill('↑ゲームを選択'));
   const resultRefs = useRef([]);
   const containerRefs = useRef([]);
 
@@ -25,6 +25,15 @@ const RandomWordPicker = () => {
   const [showTimeUpPopup, setShowTimeUpPopup] = useState(false);
   const [isTimeAlmostUp, setIsTimeAlmostUp] = useState(false);
   const [isTimeUp, setIsTimeUp] = useState(false);
+
+  const [selectedFont, setSelectedFont] = useState('Azuki');
+
+  const fontOptions = [
+    { value: 'Azuki', label: '小豆フォント' },
+    { value: 'MakaPop', label: '851マカポップ' },
+    { value: 'NotoSansJP', label: 'Noto Sans JP' },
+    { value: 'AppliMincho', label: 'アプリ明朝' }, // アプリ明朝を追加
+  ];
 
   const adjustFontSize = () => {
     const resultElement = resultRef.current;
@@ -99,7 +108,7 @@ const RandomWordPicker = () => {
     setIsTimeAlmostUp(false);
     setIsTimeUp(false);
     
-    if (selectedTimer === 0) return; // タイマーが0（なし）の場合は何もしない
+    if (selectedTimer === 0) return; // タイ���ーが0（なし）の場合は何もしない
 
     timerRef.current = setInterval(() => {
       setRemainingTime(prevTime => {
@@ -183,7 +192,7 @@ const RandomWordPicker = () => {
 
   const checkPasswordAndRedirect = (event) => {
     event.preventDefault();
-    const enteredPassword = prompt('パスワードを入力してください:');
+    const enteredPassword = prompt('パスワーを入力してください:');
     const correctPassword = process.env.REACT_APP_COMMON_PASS;
     if (correctPassword && enteredPassword === correctPassword) {
       window.open(process.env.REACT_APP_SPREADSHEET_URL, '_blank');
@@ -202,7 +211,7 @@ const RandomWordPicker = () => {
       ref={el => containerRefs.current[index] = el}
     >
       <div 
-        className={`result ${isTimeAlmostUp ? 'time-almost-up' : ''} ${isTimeUp ? 'time-up' : ''}`}
+        className={`result font-${selectedFont}`}
         ref={el => resultRefs.current[index] = el}
         style={{ fontSize: `${fontSizes[`player-${index + 1}`] || 16}px` }}
       >
@@ -274,6 +283,11 @@ const RandomWordPicker = () => {
     { value: 600, label: '10:00' },
   ];
 
+  useEffect(() => {
+    document.documentElement.style.setProperty('--selected-font', selectedFont);
+    document.body.className = `font-${selectedFont}`;
+  }, [selectedFont]);
+
   return (
     <div className="random-word-picker">
       <header>
@@ -312,12 +326,24 @@ const RandomWordPicker = () => {
                 ))}
               </select>
             </div>
+            <div className="font-selector">
+              <span>フォント：</span>
+              <select
+                value={selectedFont}
+                onChange={(e) => setSelectedFont(e.target.value)}
+              >
+                {fontOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className={`overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu}></div>
         </div>
       </header>
 
       <main ref={mainRef} className={`player-count-${playerCount}`}>
+        <div className="loader" style={{display: isLoading ? 'block' : 'none'}}></div>
         {results.slice(0, playerCount).map((result, index) => (
           <ResultDisplay key={index} result={result} index={index} />
         ))}

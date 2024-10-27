@@ -16,11 +16,14 @@ const RandomWordPicker = () => {
   const resultRef = useRef(null);
   const mainRef = useRef(null);
 
+  const audio = new Audio('/timeup_sound.mp3');
+
   const [fontSizes, setFontSizes] = useState({});
 
   const [selectedTimer, setSelectedTimer] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const timerRef = useRef(null);
+
 
   const [showTimeUpPopup, setShowTimeUpPopup] = useState(false);
   const [isTimeAlmostUp, setIsTimeAlmostUp] = useState(false);
@@ -120,6 +123,7 @@ const RandomWordPicker = () => {
           setShowTimeUpPopup(true);
           setIsTimeAlmostUp(false);
           setIsTimeUp(true);
+          audio.play();
           return 0;
         }
         return prevTime - 1;

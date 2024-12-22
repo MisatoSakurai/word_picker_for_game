@@ -16,7 +16,8 @@ const RandomWordPicker = () => {
   const resultRef = useRef(null);
   const mainRef = useRef(null);
 
-  const audio = new Audio('/timeup_sound.mp3');
+  const audio_timeup = new Audio('/timeup_sound.mp3');
+  const audio_remind = new Audio('/kira.mp3');
 
   const [fontSizes, setFontSizes] = useState({});
 
@@ -30,12 +31,19 @@ const RandomWordPicker = () => {
   const [isTimeUp, setIsTimeUp] = useState(false);
 
   const [selectedFont, setSelectedFont] = useState('NotoSansJP');
+  const [selectedTimerStyle, setSelectedTimerStyle] = useState('timer_none');
 
   const fontOptions = [
     { value: 'NotoSansJP', label: 'Noto Sans JP' },
     { value: 'AppliMincho', label: 'アプリ明朝' }, // アプリ明朝を追加
     { value: 'Azuki', label: '小豆フォント' },
     { value: 'MakaPop', label: '851マカポップ' },
+  ];
+
+  const timer_styles = [
+    { value: 'timer_none', label: 'なし' },
+    { value: 'timer_1', label: '下に' },
+    { value: 'timer_2', label: '背景に' },
   ];
 
   const adjustFontSize = () => {
@@ -110,26 +118,38 @@ const RandomWordPicker = () => {
     setRemainingTime(selectedTimer);
     setIsTimeAlmostUp(false);
     setIsTimeUp(false);
+    audio_timeup.currentTime = 0; // 音声をリセット
+    audio_remind.currentTime = 0; // 音声をリセット
     
-    if (selectedTimer === 0) return; // タイ���ーが0（なし）の場合は何もしない
+    if (selectedTimer === 0) return; // タイマーが0（なし）の場合は何もしない
 
     timerRef.current = setInterval(() => {
       setRemainingTime(prevTime => {
         if (prevTime <= 6 && prevTime > 1) {
           setIsTimeAlmostUp(true);
         }
+        if(prevTime == 31){
+          audio_remind.play();
+        }
         if (prevTime <= 1) {
           clearInterval(timerRef.current);
           setShowTimeUpPopup(true);
           setIsTimeAlmostUp(false);
           setIsTimeUp(true);
-          audio.play();
+          audio_timeup.play();
           return 0;
         }
         return prevTime - 1;
       });
     }, 1000);
   };
+
+
+  const stopTimer = () => {
+    clearInterval(timerRef.current);
+    setIsTimeAlmostUp(false);
+    setIsTimeUp(true);
+  }
 
   const closeTimeUpPopup = () => {
     setShowTimeUpPopup(false);
@@ -182,6 +202,7 @@ const RandomWordPicker = () => {
       initializeApp();
     }
 
+    stopTimer();
     startTimer();
   };
 
@@ -341,17 +362,30 @@ const RandomWordPicker = () => {
                 ))}
               </select>
             </div>
+            <div className="font-selector">
+              <span>タイマーのスタイル：</span>
+              <select
+                value={selectedTimerStyle}
+                onChange={(e) => setSelectedTimerStyle(e.target.value)}
+              >
+                {timer_styles.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className={`overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu}></div>
         </div>
       </header>
 
       <main ref={mainRef} className={`player-count-${playerCount}`}>
+        {(remainingTime > 0 && playerCount <= 2) && (<div className={`${selectedTimerStyle}`}>{formatTime(remainingTime)}</div>)}
         <div className="loader" style={{display: isLoading ? 'block' : 'none'}}></div>
         {results.slice(0, playerCount).map((result, index) => (
           <ResultDisplay key={index} result={result} index={index} />
         ))}
       </main>
+      
 
       <footer>
         <button className="pick-button" onClick={pickRandomWord} disabled={isLoading}>
@@ -362,7 +396,7 @@ const RandomWordPicker = () => {
       {showTimeUpPopup && selectedTimer !== 0 && (
         <div className="popup-overlay">
           <div className="popup">
-            <h2>タイムアップ！</h2>
+            <h1>タイムアップ！</h1>
             <button onClick={closeTimeUpPopup}>閉じる</button>
           </div>
         </div>
